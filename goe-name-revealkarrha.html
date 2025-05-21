@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GOE Secret Reveal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet"/>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background: radial-gradient(ellipse at center, #0b0c10, #000000);
+      font-family: 'Orbitron', sans-serif;
+      overflow: hidden;
+      color: #ff69b4;
+    }
+
+    .stars {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: transparent url('https://www.transparenttextures.com/patterns/stardust.png') repeat;
+      animation: starsMove 60s linear infinite;
+      z-index: 0;
+      opacity: 0.3;
+    }
+
+    @keyframes starsMove {
+      from { background-position: 0 0; }
+      to { background-position: 1000px 1000px; }
+    }
+
+    h1 {
+      position: absolute;
+      top: 20%;
+      left: 8%;
+      z-index: 2;
+      text-shadow: 0 0 10px #ff69b4;
+      font-size: 1.6em;
+      white-space: pre-line;
+    }
+
+    .gift-container {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 400px;
+      height: 400px;
+      cursor: pointer;
+      animation: float 3s ease-in-out infinite;
+      z-index: 1;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .gift-container:hover {
+      width: 410px;
+      height: 410px;
+      filter: drop-shadow(0 0 20px #ff69b4);
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(-10px); }
+    }
+
+    .box {
+      width: 380px;
+      height: 380px;
+      background: #2c2c2c;
+      border-radius: 16px;
+      position: relative;
+      box-shadow: 0 0 30px #ff69b4;
+    }
+
+    .lid {
+      position: absolute;
+      width: 400px;
+      height: 80px;
+      top: -80px;
+      background: #ff69b4;
+      border-radius: 16px 16px 0 0;
+      transform-origin: bottom center;
+      transition: transform 1s ease;
+      box-shadow: inset 0 -6px 0 #b30059;
+      z-index: 3;
+    }
+
+    .ribbon {
+      position: absolute;
+      width: 40px;
+      height: 100%;
+      background: #b30059;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+    }
+
+    .scratch-card-container {
+      position: absolute;
+      top: 150px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
+      width: 320px;
+      height: 150px;
+      z-index: 5;
+      background-color: transparent;
+    }
+
+    canvas {
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(255, 105, 180, 0.3);
+      position: absolute;
+    }
+
+    .home-link {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 5;
+      text-decoration: none;
+      color: #ff69b4;
+      font-weight: bold;
+      padding: 8px 14px;
+      border: 1px solid #ff69b4;
+      border-radius: 8px;
+      background: rgba(255, 105, 180, 0.1);
+    }
+
+    .home-link:hover {
+      background: #ff69b4;
+      color: black;
+    }
+  </style>
+</head>
+<body>
+  <div class="stars"></div>
+  <a href="index.html" class="home-link">⬅ Home</a>
+
+  <h1>
+    Click the Gift to Reveal<br>
+    What GOE means
+  </h1>
+
+  <!-- GIFT BOX -->
+  <div class="gift-container" id="giftBox" onclick="openBox()">
+    <div class="lid" id="lid"></div>
+    <div class="box">
+      <div class="ribbon"></div>
+    </div>
+  </div>
+
+  <!-- SCRATCH CARD CONTAINER -->
+  <div class="scratch-card-container" id="scratchContainer">
+    <!-- Message canvas underneath -->
+    <canvas id="messageCanvas" width="320" height="150" style="z-index: 1;"></canvas>
+    <!-- Scratch layer on top -->
+    <canvas id="scratchCanvas" width="320" height="150" style="z-index: 2;"></canvas>
+  </div>
+
+  <!-- SCRIPT -->
+  <script>
+    const lid = document.getElementById('lid');
+    const scratchContainer = document.getElementById('scratchContainer');
+
+    const scratchCanvas = document.getElementById('scratchCanvas');
+    const scratchCtx = scratchCanvas.getContext('2d');
+
+    const messageCanvas = document.getElementById('messageCanvas');
+    const messageCtx = messageCanvas.getContext('2d');
+
+    const hiddenText = "GOE = Game Of Experience";
+    let isDrawing = false;
+
+    function openBox() {
+      lid.style.transform = 'rotateX(180deg)';
+      setTimeout(() => {
+        scratchContainer.style.display = 'block';
+        initScratchCard();
+      }, 1000);
+    }
+
+    function initScratchCard() {
+      // Draw message on bottom canvas
+      messageCtx.clearRect(0, 0, messageCanvas.width, messageCanvas.height);
+      messageCtx.fillStyle = "#ffffff";
+      messageCtx.font = "20px Orbitron, sans-serif";
+      messageCtx.textAlign = "center";
+      messageCtx.fillText(hiddenText, messageCanvas.width / 2, messageCanvas.height / 2);
+
+      // Draw gray top layer on scratch canvas
+      scratchCtx.globalCompositeOperation = 'source-over';
+      scratchCtx.fillStyle = "#aaaaaa";
+      scratchCtx.fillRect(0, 0, scratchCanvas.width, scratchCanvas.height);
+
+      // Draw “Scratch Me” text on top
+      scratchCtx.fillStyle = "#333";
+      scratchCtx.font = "22px Orbitron, sans-serif";
+      scratchCtx.textAlign = "center";
+      scratchCtx.fillText("Scratch Me", scratchCanvas.width / 2, scratchCanvas.height / 2);
+
+      // Switch to scratch mode
+      scratchCtx.globalCompositeOperation = 'destination-out';
+
+      scratchCanvas.addEventListener("mousedown", () => isDrawing = true);
+      scratchCanvas.addEventListener("mouseup", () => isDrawing = false);
+      scratchCanvas.addEventListener("mouseleave", () => isDrawing = false);
+      scratchCanvas.addEventListener("mousemove", scratch);
+      scratchCanvas.addEventListener("touchstart", () => isDrawing = true);
+      scratchCanvas.addEventListener("touchend", () => isDrawing = false);
+      scratchCanvas.addEventListener("touchmove", scratchTouch, { passive: false });
+    }
+
+    function scratch(e) {
+      if (!isDrawing) return;
+      const rect = scratchCanvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      scratchCtx.beginPath();
+      scratchCtx.arc(x, y, 15, 0, Math.PI * 2);
+      scratchCtx.fill();
+    }
+
+    function scratchTouch(e) {
+      e.preventDefault();
+      if (!isDrawing) return;
+      const rect = scratchCanvas.getBoundingClientRect();
+      const touch = e.touches[0];
+      const x = touch.clientX - rect.left;
+      const y = touch.clientY - rect.top;
+      scratchCtx.beginPath();
+      scratchCtx.arc(x, y, 15, 0, Math.PI * 2);
+      scratchCtx.fill();
+    }
+  </script>
+</body>
+</html>
